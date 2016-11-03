@@ -1,0 +1,53 @@
+{
+  "private": true,
+  "name": "input-assist",
+  "displayName": "Input Assist",
+  "description": "Tree-based input assistance for unicode and more in Visual Studio Code",
+  "version": "0.0.0",
+  "publisher": "freebroccolo",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/freebroccolo/vscode-input-assist/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/freebroccolo/vscode-input-assist.git"
+  },
+  "engines": {
+    "vscode": "^1.5.0"
+  },
+  "categories": [],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Input Assist configuration",
+      "properties": {
+        "input-assist.input-method.path": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string" }
+          ],
+          "default": null,
+          "description": "Path to the input-method file."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "vscode:prepublish": "tsc -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^6.0.45",
+    "tslint": "^3.15.1",
+    "typescript": "^2.0.7",
+    "vscode": "^1.0.3"
+  },
+  "dependencies": {},
+  "extensionDependencies": []
+}
