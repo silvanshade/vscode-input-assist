@@ -1,15 +1,21 @@
+import Command from "./command";
 import Method from "./method";
 import Operation from "./operation";
 import * as schema from "./schema";
+import Session from "./session";
 import * as vs from "vscode";
 
 export default class Provider {
-  private readonly method: Method;
-  private readonly output: vs.OutputChannel;
+  public static async continueCompleting(): Promise<void> {
+    return vs.commands.executeCommand<void>("editor.action.triggerSuggest");
+  }
 
-  constructor(output: vs.OutputChannel, method: Method) {
+  private readonly method: Method;
+  private readonly session: Session;
+
+  constructor(session: Session, method: Method) {
     this.method = method;
-    this.output = output;
+    this.session = session;
     return this;
   }
 
@@ -40,7 +46,7 @@ export default class Provider {
       }
     } else {
       item.command = {
-        command: "input-assist.continueCompleting",
+        command: Command["input-assist"].Method.continueCompleting,
         title: "",
       };
       item.detail = `(${trie.fork.length} more)`;

@@ -1,14 +1,46 @@
+import Command from "./command";
+import Loader from "./loader";
 import Operation from "./operation";
+import Provider from "./provider";
 import * as schema from "./schema";
+import Session from "./session";
 import * as vs from "vscode";
 
 export default class Method implements vs.Disposable {
-  public data: schema.IData;
-  public output: vs.OutputChannel;
+  public static async load(session: Session): Promise<null | Method> {
+    const configuration = vs.workspace.getConfiguration("input-assist");
+    const path = configuration.get<null | string>("input-method.path", null);
+    if (path == null) {
+      vs.window.showWarningMessage(`input-assist: path to input method needs to be configured.`);
+      vs.window.showWarningMessage(`input-assist: see the "input-assist.input-method.path" setting.`);
+      return null;
+    }
+    let method: null | Method = null;
+    try {
+      method = await Loader.load(session, path);
+    } catch (err) {
+      if (err.code === "ENOENT") vs.window.showErrorMessage(`Input method file "${path}" cannot be found.`);
+    }
+    if (method != null) {
+      const triggerCharacters: string[] = [];
+      for (const trie of method.data.fork) if (trie.type === "node") triggerCharacters.push(trie.node);
+      const provider = new Provider(session, method);
+      const filter: vs.DocumentFilter = { language: "*" };
+      session.context.subscriptions.push(vs.languages.registerCompletionItemProvider(filter, provider.completionItems(), ...triggerCharacters));
+      session.context.subscriptions.push(vs.commands.registerCommand(Command["input-assist"].Method.continueCompleting, Provider.continueCompleting));
+    }
+    return method;
+  }
 
-  constructor(output: vs.OutputChannel, data: schema.IData) {
-    this.output = output;
+  public data: schema.IData;
+  public path: string;
+  public session: Session;
+
+  constructor(session: Session, path: string, data: schema.IData) {
     this.data = data;
+    this.path = path;
+    this.session = session;
+    session.addMethod(this);
     return this;
   }
 
@@ -31,6 +63,7 @@ export default class Method implements vs.Disposable {
   }
 
   public dispose(): void {
+    this.session.deleteMethod(this);
     return;
   }
 }
