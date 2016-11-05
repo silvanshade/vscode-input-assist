@@ -1,5 +1,6 @@
 import Command from "./command";
 import Method from "./method";
+import Provider from "./provider";
 import * as vs from "vscode";
 
 export default class Session implements vs.Disposable {
@@ -11,6 +12,7 @@ export default class Session implements vs.Disposable {
   constructor(context: vs.ExtensionContext) {
     this.context = context;
     this.statusItem = this.createStatusItem();
+    context.subscriptions.push(vs.commands.registerCommand(Command["input-assist"].Method.continueCompleting, Provider.continueCompleting));
     context.subscriptions.push(vs.commands.registerCommand(Command["input-assist"].Session.displayMethodDescriptions, this.displayMethodDescriptions.bind(this)));
     return this;
   }
@@ -38,10 +40,19 @@ export default class Session implements vs.Disposable {
   }
 
   public async initialize(): Promise<boolean> {
-    let status = false;
-    const method = await Method.load(this);
-    if (status = (method != null)) this.context.subscriptions.push(method as Method); // tslint:disable-line
-    return status;
+    const configuration = vs.workspace.getConfiguration("input-assist");
+    const paths = configuration.get<null | string[]>("input-method.paths", []);
+    if (paths == null) {
+      vs.window.showWarningMessage(`input-assist: paths to input methods needs to be configured`);
+      vs.window.showWarningMessage(`input-assist: see the "input-assist.input-method.paths" setting`);
+      return false;
+    }
+    let count = 0;
+    while (count < paths.length) {
+      const method = await Method.load(this, paths[count++]);
+      if (method != null) this.context.subscriptions.push(method as Method); // tslint:disable-line
+    }
+    return count > 0;
   }
 
   private createStatusItem(): vs.StatusBarItem {
