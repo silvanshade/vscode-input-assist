@@ -20,29 +20,11 @@
   "activationEvents": [
     "*"
   ],
+  "files": [
+    "assets"
+  ],
   "main": "./out/src/main",
   "contributes": {
-    "configuration": {
-      "type": "object",
-      "title": "Input Assist configuration",
-      "properties": {
-        "input-assist.input-method.paths": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          ],
-          "default": null,
-          "description": "Paths to the input-method file."
-        }
-      }
-    }
   },
   "scripts": {
     "compile": "tsc -watch -p ./",
