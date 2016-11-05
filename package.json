@@ -20,7 +20,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./out/src/extension",
+  "main": "./out/src/main",
   "contributes": {
     "configuration": {
       "type": "object",
