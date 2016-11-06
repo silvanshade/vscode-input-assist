@@ -14,6 +14,15 @@ export default class Session implements vs.Disposable {
     this.statusItem = this.createStatusItem();
     context.subscriptions.push(vs.commands.registerCommand(Command["input-assist"].Method.continueCompleting, Provider.continueCompleting));
     context.subscriptions.push(vs.commands.registerCommand(Command["input-assist"].Session.displayMethodDescriptions, this.displayMethodDescriptions.bind(this)));
+    context.subscriptions.push(vs.commands.registerTextEditorCommand(Command["input-assist"].acceptSelectedSuggestionOnSpace, async (editor) => {
+      await vs.commands.executeCommand(Command.vscode.acceptSelectedSuggestionOnEnter);
+      const list = await vs.commands.executeCommand<vs.CompletionList>(Command.vscode.executeCompletionItemProvider, editor.document.uri, editor.selection.active);
+      if (list.isIncomplete) {
+        await vs.commands.executeCommand(Command["input-assist"].Method.continueCompleting);
+      } else {
+        await editor.edit((edit) => edit.insert(editor.selection.active, " "));
+      }
+    }));
     return this;
   }
 

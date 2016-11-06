@@ -19,30 +19,24 @@ export default class Provider {
     return this;
   }
 
-  public leaf(range: vs.Range, computedPrefix: string, { leaf, name }: schema.ILeaf): vs.CompletionItem {
+  public leaf(_: vs.Range, computedPrefix: string, { leaf, name }: schema.ILeaf, index: number): vs.CompletionItem {
     const kind = vs.CompletionItemKind.Text;
-    const item = new vs.CompletionItem(`${computedPrefix} [${name[0]}]`, kind);
-    item.detail = leaf;
-    item.filterText = computedPrefix;
+    const item = new vs.CompletionItem(computedPrefix, kind);
+    item.sortText = `${computedPrefix}${index}`;
+    item.detail = `[${name[0]}] ${leaf}`;
     item.insertText = leaf;
-    item.additionalTextEdits = [
-      vs.TextEdit.delete(new vs.Range(range.start, range.start.translate(0, 1))),
-    ];
     return item;
   }
 
-  public node(range: vs.Range, computedPrefix: string, terminalPrefix: string, trie: schema.INode): vs.CompletionItem {
+  public node(_: vs.Range, computedPrefix: string, terminalPrefix: string, trie: schema.INode): vs.CompletionItem {
     const label = `${computedPrefix}${trie.node.slice(terminalPrefix.length)}`;
     const kind = vs.CompletionItemKind.Text;
     const item = new vs.CompletionItem(label, kind);
     if (trie.fork.length === 1) {
       const next = trie.fork[0];
       if (next.type === "leaf") {
-        item.detail = next.leaf;
+        item.detail = `[${next.name[0]}] ${next.leaf}`;
         item.insertText = next.leaf;
-        item.additionalTextEdits = [
-          vs.TextEdit.delete(new vs.Range(range.start, range.start.translate(0, 1))),
-        ];
       }
     } else {
       item.command = {
@@ -50,12 +44,15 @@ export default class Provider {
         title: "",
       };
       item.detail = `(${trie.fork.length} more)`;
+      const leaves: string[] = [];
       const nodes: string[] = [];
       for (const next of trie.fork) {
-        if (next.type === "leaf") nodes.push(next.leaf);
+        if (next.type === "leaf") leaves.push(next.leaf);
         if (next.type === "node") nodes.push(next.node);
       }
-      item.documentation = nodes.join(", ");
+      item.documentation  = "";
+      if (leaves.length > 0) item.documentation += `leaves: { ${leaves.join(", ")} }\n`;
+      if ( nodes.length > 0) item.documentation += `nodes: { ${nodes.join(", ")} }`;
     }
     return item;
   }
@@ -73,11 +70,13 @@ export default class Provider {
         let isIncomplete = false;
         if (trigger) {
           const { terminalFork, terminalPrefix, triggerResult } = Operation.findFork(trigger);
-          const { computedPrefix } = triggerResult;
-          for (const trie of terminalFork) {
+          let { computedPrefix } = triggerResult;
+          computedPrefix = `\\${computedPrefix}`;
+          for (let i = 0; i < terminalFork.length; i++) {
+            const trie = terminalFork[i];
             switch (trie.type) {
               case "leaf":
-                items.push(provider.leaf(range, computedPrefix, trie));
+                items.push(provider.leaf(range, computedPrefix, trie, i));
                 break;
               case "node":
                 items.push(provider.node(range, computedPrefix, terminalPrefix, trie));
