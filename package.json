@@ -3,7 +3,7 @@
   "name": "input-assist",
   "displayName": "Input Assist",
   "description": "Tree-based input assistance for unicode and more in Visual Studio Code",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "freebroccolo",
   "license": "Apache-2.0",
   "bugs": {
