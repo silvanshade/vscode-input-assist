@@ -25,6 +25,19 @@
   ],
   "main": "./out/src/main",
   "contributes": {
+    "configuration": {
+      "title": "Input Assist configuration",
+      "properties": {
+        "agda-input.languages": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+          ],
+          "default": null,
+          "description": "List of language ids for which to enable input assistance"
+        }
+      }
+    }
   },
   "scripts": {
     "compile": "tsc -watch -p ./",

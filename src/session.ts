@@ -50,16 +50,16 @@ export default class Session implements vs.Disposable {
 
   public async initialize(): Promise<boolean> {
     const paths = [this.context.asAbsolutePath("./assets/Agda.json")];
-    // const configuration = vs.workspace.getConfiguration("input-assist");
-    // const paths = configuration.get<null | string[]>("input-method.paths", []);
-    // if (paths == null) {
-    //   vs.window.showWarningMessage(`input-assist: paths to input methods needs to be configured`);
-    //   vs.window.showWarningMessage(`input-assist: see the "input-assist.input-method.paths" setting`);
-    //   return false;
-    // }
+    const configuration = vs.workspace.getConfiguration("input-assist");
+    const languages = configuration.get<null | string[]>("languages", null);
+    if (languages == null) {
+      vs.window.showWarningMessage(`input-assist: input assist is not configured for any languages yet`);
+      vs.window.showWarningMessage(`input-assist: see the "input-assist.languages" setting`);
+      return false;
+    }
     let count = 0;
     while (count < paths.length) {
-      const method = await Method.load(this, paths[count++]);
+      const method = await Method.load(this, paths[count++], languages);
       if (method != null) this.context.subscriptions.push(method as Method); // tslint:disable-line
     }
     return count > 0;

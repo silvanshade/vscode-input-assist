@@ -6,7 +6,7 @@ import Session from "./session";
 import * as vs from "vscode";
 
 export default class Method implements vs.Disposable {
-  public static async load(session: Session, path: string): Promise<null | Method> {
+  public static async load(session: Session, path: string, languages: string[]): Promise<null | Method> {
     let method: null | Method = null;
     try {
       method = await Loader.load(session, path);
@@ -17,8 +17,7 @@ export default class Method implements vs.Disposable {
       const triggerCharacters: string[] = [];
       for (const trie of method.data.fork) if (trie.type === "node") triggerCharacters.push(trie.node);
       const provider = new Provider(session, method);
-      const filter: vs.DocumentFilter = { language: "*" };
-      method.subscriptions.push(vs.languages.registerCompletionItemProvider(filter, provider.completionItems(), ...triggerCharacters));
+      method.subscriptions.push(vs.languages.registerCompletionItemProvider(languages, provider.completionItems(), ...triggerCharacters));
     }
     return method;
   }
