@@ -72,7 +72,7 @@ export default class Session implements vs.Disposable {
   }
 
   private refreshStatus(): void {
-    this.statusItem.text = `$(keyboard) [${Array.from(this.methods.values()).map((method) => method.data.indicator).join(", ")}]`;
+    this.statusItem.text = `$(keyboard)`; // [${Array.from(this.methods.values()).map((method) => method.data.indicator).join(", ")}]`;
     this.statusItem.tooltip = Array.from(this.methods.values()).map((method) => method.data.id).join("\n* ");
     this.statusItem.show();
   }
