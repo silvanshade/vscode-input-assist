@@ -19,16 +19,16 @@ export default class Provider {
     return this;
   }
 
-  public leaf(_: vs.Range, computedPrefix: string, { leaf, name }: schema.ILeaf, index: number): vs.CompletionItem {
+  public leaf(range: vs.Range, computedPrefix: string, { leaf, name }: schema.ILeaf, index: number): vs.CompletionItem {
     const kind = vs.CompletionItemKind.Text;
     const item = new vs.CompletionItem(computedPrefix, kind);
     item.sortText = `${computedPrefix}${index}`;
     item.detail = `[${name[0]}] ${leaf}`;
-    item.insertText = leaf;
+    item.textEdit = vs.TextEdit.replace(range, leaf);
     return item;
   }
 
-  public node(_: vs.Range, computedPrefix: string, terminalPrefix: string, trie: schema.INode): vs.CompletionItem {
+  public node(range: vs.Range, computedPrefix: string, terminalPrefix: string, trie: schema.INode): vs.CompletionItem {
     const label = `${computedPrefix}${trie.node.slice(terminalPrefix.length)}`;
     const kind = vs.CompletionItemKind.Text;
     const item = new vs.CompletionItem(label, kind);
@@ -36,7 +36,7 @@ export default class Provider {
       const next = trie.fork[0];
       if (next.type === "leaf") {
         item.detail = `[${next.name[0]}] ${next.leaf}`;
-        item.insertText = next.leaf;
+        item.textEdit = vs.TextEdit.replace(range, next.leaf);
       }
     } else {
       item.command = {
