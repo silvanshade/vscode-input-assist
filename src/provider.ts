@@ -44,6 +44,7 @@ export default class Provider {
         title: "",
       };
       item.detail = `(${trie.fork.length} more)`;
+      item.textEdit = vs.TextEdit.replace(range, label);
       const leaves: string[] = [];
       const nodes: string[] = [];
       for (const next of trie.fork) {
