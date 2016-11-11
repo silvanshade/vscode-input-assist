@@ -51,8 +51,7 @@ export default class Provider {
         if (next.type === "node") nodes.push(next.node);
       }
       item.documentation  = "";
-      if (leaves.length > 0) item.documentation += `leaves: { ${leaves.join(", ")} }\n`;
-      if ( nodes.length > 0) item.documentation += `nodes: { ${nodes.join(", ")} }`;
+      item.documentation += [...nodes, ...leaves].join(" ");
     }
     return item;
   }
