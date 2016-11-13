@@ -17,7 +17,7 @@ export interface ILeaf {
 export interface INode {
   type: "node";
   node: string;
-  fork: Trie[];
+  fork: IFork;
 }
 
 export type Trie = ILeaf | INode;
