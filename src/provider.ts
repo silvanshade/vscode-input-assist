@@ -63,8 +63,8 @@ export default class Provider {
       async provideCompletionItems(document, position): Promise<vs.CompletionList> {
         const text = document.getText();
         let offset = document.offsetAt(position);
-        while (/[^\s]/.test(text.charAt(--offset)));
-        const range = new vs.Range(document.positionAt(offset + 1), position);
+        while (/[^\\\s]/.test(text.charAt(--offset)));
+        const range = new vs.Range(document.positionAt(offset), position);
         const trigger = await provider.method.computeTrigger(document, range);
         let items: vs.CompletionItem[] = [];
         let isIncomplete = false;
