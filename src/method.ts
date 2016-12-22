@@ -15,7 +15,10 @@ export default class Method implements vs.Disposable {
     }
     if (method != null) {
       const triggerCharacters: string[] = [];
-      for (const trie of method.data.fork) if (trie.type === "node") triggerCharacters.push(trie.node);
+      for (let i = 0; i < method.data.fork.length; i++) {
+        const trie = method.data.fork[i];
+        if (trie.type === "node") triggerCharacters.push(trie.node);
+      }
       const provider = new Provider(session, method);
       method.subscriptions.push(vs.languages.registerCompletionItemProvider(languages, provider.completionItems(), ...triggerCharacters));
     }

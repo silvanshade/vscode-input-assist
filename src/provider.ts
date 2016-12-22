@@ -47,7 +47,8 @@ export default class Provider {
       item.textEdit = vs.TextEdit.replace(range, label);
       const leaves: string[] = [];
       const nodes: string[] = [];
-      for (const next of trie.fork) {
+      for (let i = 0; i < trie.fork.length; i++) {
+        const next = trie.fork[i];
         if (next.type === "leaf") leaves.push(next.leaf);
         if (next.type === "node") nodes.push(next.node);
       }
