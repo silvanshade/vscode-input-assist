@@ -28,7 +28,7 @@
     "configuration": {
       "title": "Input Assist configuration",
       "properties": {
-        "agda-input.languages": {
+        "input-assist.languages": {
           "oneOf": [
             {
               "type": "null"
