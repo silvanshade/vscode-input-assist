@@ -1,5 +1,5 @@
-import Session from "./session";
 import * as vs from "vscode";
+import Session from "./session";
 
 export async function activate(context: vs.ExtensionContext): Promise<void> {
   const session = new Session(context);
