@@ -53,10 +53,10 @@
     "vscode:prepublish": "tsc -p ./"
   },
   "devDependencies": {
-    "@types/node": "6.0.52",
-    "tslint": "4.1.1",
-    "typescript": "2.1.4",
-    "vscode": "1.0.3"
+    "@types/node": "12.7.2",
+    "tslint": "5.19.0",
+    "typescript": "3.5.3",
+    "vscode": "1.1.36"
   },
   "dependencies": {},
   "extensionDependencies": []
