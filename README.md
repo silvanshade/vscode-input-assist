@@ -2,7 +2,7 @@
 
 Tree-based input assistance for unicode and more in Visual Studio Code
 
-## What is this package?
+## Description
 
 This package provides a flexible input assistance framework built on top of
 Visual Studio Code's completion provider functionality. It works by loading JSON
